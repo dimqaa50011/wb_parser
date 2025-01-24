@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PosixPath
 from typing import Literal
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -32,11 +32,17 @@ class DBConfig(BaseSettings):
         )
 
 
+class ProjectSettings(BaseModel):
+    debug: bool = DEBUG
+    base_dir: Path = BASE_DIR
+
+
 class Settings(BaseModel):
     db: DBConfig
+    project: ProjectSettings
 
 
-settings = Settings(db=DBConfig(_env_file=env_path))
+settings = Settings(db=DBConfig(_env_file=env_path), project=ProjectSettings())
 
 
 __all__ = ("settings",)
