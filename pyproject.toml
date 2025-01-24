@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "wb-parser"
+version = "0.1.0"
+description = ""
+authors = ["Dmitry <dz5011@yandex.ru>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "0.115.7"
+sqlalchemy = "2.0.37"
+alembic = "1.14.1"
+pydantic-settings = "2.7.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
