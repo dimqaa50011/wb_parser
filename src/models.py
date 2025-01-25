@@ -3,6 +3,7 @@ from decimal import Decimal
 from typing import Any
 
 from sqlalchemy import (
+    Float,
     Integer,
     String,
     DateTime,
@@ -35,4 +36,4 @@ class Product(BaseDBModel):
     title: Mapped[str] = mapped_column(String)
     price: Mapped[Decimal] = mapped_column(DECIMAL(precision=12, scale=2))
     quantity_sum: Mapped[int] = mapped_column(Integer)
-    rating: Mapped[int] = mapped_column(SmallInteger)
+    rating: Mapped[float] = mapped_column(Float)
