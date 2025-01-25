@@ -1,4 +1,4 @@
-from pathlib import Path, PosixPath
+from pathlib import Path
 from typing import Literal
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -19,7 +19,9 @@ class DBConfig(BaseSettings):
     port: str
     name: str
 
-    model_config = SettingsConfigDict(env_prefix="DB_", extra="ignore")
+    model_config = SettingsConfigDict(
+        env_file=env_path, env_prefix="DB_", extra="ignore"
+    )
 
     def uri(self, driver: DB_DRIVERS = "postgresql+asyncpg") -> str:
         return "%(driver)s://%(user)s:%(password)s@%(host)s:%(port)s/%(name)s" % dict(
@@ -42,7 +44,7 @@ class Settings(BaseModel):
     project: ProjectSettings
 
 
-settings = Settings(db=DBConfig(_env_file=env_path), project=ProjectSettings())
+settings = Settings(db=DBConfig.model_validate({}), project=ProjectSettings())
 
 
 __all__ = ("settings",)
