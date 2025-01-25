@@ -29,7 +29,7 @@ class BaseRepositoryProtocol(Protocol[T]):
 
     async def find(self, spec: Specification) -> T | None: ...
 
-    async def create(self, data: dict[str, int | str | Decimal]) -> T | None: ...
+    async def create(self, data: dict[str, int | str | Decimal]) -> T: ...
 
     async def refresh(
         self, spec: Specification, upd_data: dict[str, int | str | Decimal]
@@ -44,7 +44,7 @@ class BaseRepository(BaseRepositoryProtocol[T]):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def create(self, data: dict[str, int | str | Decimal]) -> Optional[T]:
+    async def create(self, data: dict[str, int | str | Decimal]) -> T:
         new_item = self.model(**data)
         self._session.add(new_item)
 
@@ -102,10 +102,10 @@ class BaseRepository(BaseRepositoryProtocol[T]):
 class ProductRepository(BaseRepository[Product]):
     model = Product
 
-    async def create(self, data: dict[str, int | str | Decimal]) -> Product | None:
+    async def create(self, data: dict[str, int | str | Decimal]) -> Product:
         return await super().create(data)
 
-    async def find(self, spec: Specification) -> Product | Sequence[Product] | None:
+    async def find(self, spec: Specification) -> Product | None:
         return await super().find(spec)
 
     async def find_all(self) -> Sequence[Product]:

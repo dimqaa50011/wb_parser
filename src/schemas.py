@@ -1,10 +1,10 @@
 from decimal import Decimal
 from typing import Optional, Self
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class ProductCreate(BaseModel):
-    aricul: int
+    articul: int
     title: str
     price: Decimal
     rating: float
@@ -35,4 +35,44 @@ class ProductRefresh(BaseModel):
             for field in [field for field in self.model_fields.keys()]
         ):
             raise ValueError("At least one field must be set")
+        return self
+
+
+class StokData(BaseModel):
+    qty: int
+
+
+class SizeData(BaseModel):
+    stocks: list[StokData]
+
+
+class ParsedProducts(BaseModel):
+    articul: int = Field(default=..., alias="id")
+    title: str = Field(default=..., alias="name")
+    rating: float = Field(default=..., alias="reviewRating")
+    price: int = Field(default=..., alias="priceU")
+    sizes: list[SizeData]
+
+
+class ParsedData(BaseModel):
+    products: list[ParsedProducts]
+
+
+class FormattedData(BaseModel):
+    articul: int
+    title: str
+    rating: float
+    price: int
+    quantity_sum: int = 0
+
+    sizes: list[SizeData]
+
+    @model_validator(mode="after")
+    def compute_quamtity_summ(self):
+        control_summ = 0
+        for size in self.sizes:
+            for stock in size.stocks:
+                control_summ += stock.qty
+
+        self.quantity_sum = control_summ
         return self

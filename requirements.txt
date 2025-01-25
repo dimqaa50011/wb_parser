@@ -3,3 +3,4 @@ SQLAlchemy==2.0.37
 alembic==1.14.1
 pydantic-settings==2.7.1
 asyncpg==0.30.0
+aiohttp==3.11.11
