@@ -1,5 +1,7 @@
 from decimal import Decimal
 
+from fastapi import HTTPException, status
+
 from .errors import ProductNotCreated
 from .schemas import (
     FormattedData,
@@ -26,8 +28,9 @@ class ProductService:
     async def get_product(self, articul: int):
         product = await self._product_repo.find(FindProductByArticul(articul))
         if product is not None:
-            return product
+            return ProductRead.model_validate(product, from_attributes=True)
 
+    async def parse_product(self, articul: int):
         parsed_product = await self._parser.get_product(articul)
         if parsed_product is None:
             return
@@ -35,28 +38,23 @@ class ProductService:
         parsed_product_data = ParsedData.model_validate(
             parsed_product["data"], from_attributes=True
         )
-        try:
-            product = await self.save_product(
-                FormattedData.model_validate(
-                    parsed_product_data.products[0], from_attributes=True
-                )
-            )
 
-            return ProductRead.model_validate(product, from_attributes=True)
-        except ProductNotCreated:
-            pass
+        return FormattedData.model_validate(
+            parsed_product_data.products[0], from_attributes=True
+        )
 
-    async def save_product(self, data: FormattedData) -> Product | None:
+    async def save_product(self, data: FormattedData) -> ProductRead:
         product = await self._product_repo.create(
             ProductCreate(
                 articul=data.articul,
                 title=data.title,
-                price=Decimal(data.price / 100),
+                price=Decimal(data.price),
+                sale_price=Decimal(data.sale_price) if data.sale_price else None,
                 rating=data.rating,
                 quantity_sum=data.quantity_sum,
             ).model_dump()
         )
-        return product
+        return ProductRead.model_validate(product, from_attributes=True)
 
     async def update_product(self, articul: int, data: ProductRefresh):
         await self._product_repo.refresh(

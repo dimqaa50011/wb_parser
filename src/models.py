@@ -35,5 +35,8 @@ class Product(BaseDBModel):
     articul: Mapped[int] = mapped_column(BigInteger, index=True, unique=True)
     title: Mapped[str] = mapped_column(String)
     price: Mapped[Decimal] = mapped_column(DECIMAL(precision=12, scale=2))
+    sale_price: Mapped[Decimal] = mapped_column(
+        DECIMAL(precision=12, scale=2), nullable=True
+    )
     quantity_sum: Mapped[int] = mapped_column(Integer)
     rating: Mapped[float] = mapped_column(Float)

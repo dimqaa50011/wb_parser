@@ -6,7 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 BASE_DIR = Path(__file__).resolve().parent.parent
 DEBUG = True
 
-env_path = BASE_DIR / ".env" if DEBUG else ".env.local"
+env_path = BASE_DIR / ".env.local" if DEBUG else BASE_DIR / ".env"
 
 
 DB_DRIVERS = Literal["postgresql+asyncpg"]
@@ -34,6 +34,14 @@ class DBConfig(BaseSettings):
         )
 
 
+class SchedulerConfig(BaseSettings):
+    interval_minutes: int
+
+    model_config = SettingsConfigDict(
+        env_file=env_path, env_prefix="SCHEDULER_", extra="ignore"
+    )
+
+
 class ProjectSettings(BaseModel):
     debug: bool = DEBUG
     base_dir: Path = BASE_DIR
@@ -42,9 +50,14 @@ class ProjectSettings(BaseModel):
 class Settings(BaseModel):
     db: DBConfig
     project: ProjectSettings
+    scheduler: SchedulerConfig
 
 
-settings = Settings(db=DBConfig.model_validate({}), project=ProjectSettings())
+settings = Settings(
+    db=DBConfig.model_validate({}),
+    project=ProjectSettings(),
+    scheduler=SchedulerConfig.model_validate({}),
+)
 
 
 __all__ = ("settings",)

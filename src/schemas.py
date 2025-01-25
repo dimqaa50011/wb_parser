@@ -3,10 +3,15 @@ from typing import Optional, Self
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 
+class ProductParseInput(BaseModel):
+    articul: int
+
+
 class ProductCreate(BaseModel):
     articul: int
     title: str
     price: Decimal
+    sale_price: Optional[Decimal] = None
     rating: float
     quantity_sum: int
 
@@ -22,9 +27,9 @@ class ProductRead(ProductCreate):
 
 
 class ProductRefresh(BaseModel):
-    aricul: Optional[int] = None
     title: Optional[str] = None
     price: Optional[Decimal] = None
+    sale_price: Optional[Decimal] = None
     rating: Optional[float] = None
     quantity_sum: Optional[int] = None
 
@@ -51,6 +56,7 @@ class ParsedProducts(BaseModel):
     title: str = Field(default=..., alias="name")
     rating: float = Field(default=..., alias="reviewRating")
     price: int = Field(default=..., alias="priceU")
+    sale_price: Optional[int] = Field(default=None, alias="salePriceU")
     sizes: list[SizeData]
 
 
@@ -62,7 +68,8 @@ class FormattedData(BaseModel):
     articul: int
     title: str
     rating: float
-    price: int
+    price: Decimal
+    sale_price: Optional[Decimal] = None
     quantity_sum: int = 0
 
     sizes: list[SizeData]
@@ -75,4 +82,11 @@ class FormattedData(BaseModel):
                 control_summ += stock.qty
 
         self.quantity_sum = control_summ
+        return self
+
+    @model_validator(mode="after")
+    def compute_price(self):
+        self.price /= 100
+        if self.sale_price is not None:
+            self.sale_price /= 100
         return self
