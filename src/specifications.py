@@ -2,7 +2,7 @@ from typing import Protocol, Type, TypeVar
 
 from sqlalchemy.sql.elements import ColumnElement
 
-from .models import Product
+from .models import Admin, Product
 
 
 class Specification(Protocol):
@@ -29,3 +29,11 @@ class FindProductByArticul(Specification):
 
     def __repr__(self) -> str:
         return f"<FindProductByArticul  {self.articul}>"
+
+
+class FindAdminByUsername(Specification):
+    def __init__(self, username: str) -> None:
+        self.username = username
+
+    def is_satisfied(self) -> tuple[ColumnElement[bool]]:
+        return (Admin.username.__eq__(self.username),)

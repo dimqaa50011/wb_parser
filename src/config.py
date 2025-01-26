@@ -42,6 +42,14 @@ class SchedulerConfig(BaseSettings):
     )
 
 
+class AuthConfig(BaseSettings):
+    salt: str
+
+    model_config = SettingsConfigDict(
+        env_file=env_path, env_prefix="AUTH_", extra="ignore"
+    )
+
+
 class ProjectSettings(BaseModel):
     debug: bool = DEBUG
     base_dir: Path = BASE_DIR
@@ -51,12 +59,14 @@ class Settings(BaseModel):
     db: DBConfig
     project: ProjectSettings
     scheduler: SchedulerConfig
+    auth: AuthConfig
 
 
 settings = Settings(
     db=DBConfig.model_validate({}),
     project=ProjectSettings(),
     scheduler=SchedulerConfig.model_validate({}),
+    auth=AuthConfig.model_validate({}),
 )
 
 

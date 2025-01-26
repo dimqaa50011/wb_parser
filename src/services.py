@@ -2,17 +2,20 @@ from decimal import Decimal
 
 from fastapi import HTTPException, status
 
+from .auth import create_password_hash, verify_password
+
 from .errors import ProductNotCreated
 from .schemas import (
+    AdminSchema,
     FormattedData,
     ParsedData,
     ProductCreate,
     ProductRead,
     ProductRefresh,
 )
-from .specifications import FindProductByArticul
+from .specifications import FindAdminByUsername, FindProductByArticul
 from .clients.wildberries import WildberiesParser
-from .models import Product
+from .models import Admin, Product
 from .repositories import BaseRepositoryProtocol
 
 
@@ -60,3 +63,22 @@ class ProductService:
         await self._product_repo.refresh(
             FindProductByArticul(articul), data.model_dump(exclude_none=True)
         )
+
+
+class AdminService:
+    def __init__(self, admin_repository: BaseRepositoryProtocol[Admin]) -> None:
+        self._admin_repo = admin_repository
+
+    async def get_admin(self, username: str, password: str):
+        admin = await self._admin_repo.find(FindAdminByUsername(username))
+        return admin
+
+    async def verify_admin(self, password: str, hashed_password: str) -> bool:
+        return verify_password(password, hashed_password)
+
+    async def create_admin(self, admin: AdminSchema) -> str:
+        hashed_password = create_password_hash(admin.password)
+        new_admin = await self._admin_repo.create(
+            {"username": admin.username, "password_hash": hashed_password}
+        )
+        return new_admin.username

@@ -40,3 +40,10 @@ class Product(BaseDBModel):
     )
     quantity_sum: Mapped[int] = mapped_column(Integer)
     rating: Mapped[float] = mapped_column(Float)
+
+
+class Admin(BaseDBModel):
+    __tablename__ = "admins"
+
+    username: Mapped[str] = mapped_column(String(64), unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(String(1024))

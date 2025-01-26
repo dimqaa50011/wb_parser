@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from src.depends import get_product_service
+from src.depends import get_product_service, login_required
 from src.scheduler import scheduler
 from src.tasks import create_task
-from src.schemas import ProductParseInput
+from src.schemas import AdminSchema, ProductParseInput
 from src.services import ProductService
 
 router = APIRouter(prefix="/products")
@@ -13,6 +13,7 @@ router = APIRouter(prefix="/products")
 async def parse_product(
     product_input: ProductParseInput,
     service: ProductService = Depends(get_product_service),
+    admin: AdminSchema = Depends(login_required),
 ):
     product = await service.get_product(product_input.articul)
     if product:
@@ -31,7 +32,7 @@ async def parse_product(
 
 @router.get("/subscribe/{artikul}")
 async def subscribe_parse_product(
-    articul: int,
+    articul: int, admin: AdminSchema = Depends(login_required)
 ):
     response = {"is_scheduled": True, "is_new": True, "articul": articul}
     job = scheduler.get_job(str(articul))

@@ -90,3 +90,13 @@ class FormattedData(BaseModel):
         if self.sale_price is not None:
             self.sale_price /= 100
         return self
+
+
+class AdminSchema(BaseModel):
+    username: str
+    password: str
+
+
+class Token(BaseModel):
+    token_type: str
+    access_token: str

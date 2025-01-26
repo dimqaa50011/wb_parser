@@ -17,6 +17,9 @@ aiohttp = "3.11.11"
 uvicorn = "0.34.0"
 apscheduler = "3.11.0"
 pytz = "2024.2"
+fastapi-jwt = "0.3.0"
+bcrypt = "4.2.1"
+python-jose = "3.3.0"
 
 
 [tool.poetry.group.DEV.dependencies]

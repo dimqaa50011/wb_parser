@@ -15,7 +15,7 @@ from sqlalchemy.exc import IntegrityError
 
 from .errors import ExecuteError, ProductNotCreated, ProductNotFound
 
-from .models import BaseDBModel, Product
+from .models import Admin, BaseDBModel, Product
 
 from .specifications import Specification
 
@@ -118,3 +118,7 @@ class ProductRepository(BaseRepository[Product]):
 
     async def remove(self, spec: Specification):
         return await super().remove(spec)
+
+
+class AdminRepository(BaseRepository[Admin]):
+    model = Admin
