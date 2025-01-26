@@ -6,7 +6,7 @@ from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.asyncio import AsyncIOExecutor
 
 
-jobstores = {"default": SQLAlchemyJobStore(url="sqlite:///jobs.sqlite")}
+jobstores = {"default": SQLAlchemyJobStore(url="sqlite:///data/jobs.sqlite")}
 executors = {"default": AsyncIOExecutor()}
 job_defaults = {"coalesce": False, "max_instances": 3}
 

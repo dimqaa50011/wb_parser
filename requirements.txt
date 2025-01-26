@@ -11,3 +11,4 @@ fastapi-jwt==0.3.0
 bcrypt==4.2.1
 python-jose==3.3.0
 aiogram==3.17.0
+loguru==0.7.3

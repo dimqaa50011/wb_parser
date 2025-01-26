@@ -1,0 +1,50 @@
+services:
+  postgres:
+    image: postgres:14
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - "${DB_PORT}:5432"
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-U", "${DB_USER}", "-d", "${DB_NAME}" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    restart: always
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    networks:
+      - wb_parser
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - wb_parser
+    restart: always
+    ports:
+      - "9897:8000"
+    depends_on:
+      - postgres
+    command: bash -c "alembic upgrade head && python main.py"
+    volumes:
+      - ./data:/app/data
+
+  tg_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - wb_parser
+    restart: always
+    depends_on:
+      - postgres
+      - backend
+    command: bash -c "python bot.py"
+
+networks:
+  wb_parser:

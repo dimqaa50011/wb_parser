@@ -1,4 +1,5 @@
 from aiogram import Bot, Dispatcher
+from loguru import logger
 
 from src.config import settings
 from .middlewares.product_service import ProducrServiceMiddleware
@@ -13,6 +14,8 @@ async def start_bot():
     dp.include_router(router)
 
     try:
+        logger.info("Bot started")
         await dp.start_polling(bot)
     finally:
         await bot.session.close()
+        logger.info("Bot stopped")

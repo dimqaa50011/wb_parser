@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DEBUG = True
+DEBUG = False
 
 env_path = BASE_DIR / ".env.local" if DEBUG else BASE_DIR / ".env"
 
