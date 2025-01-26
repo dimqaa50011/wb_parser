@@ -55,11 +55,20 @@ class ProjectSettings(BaseModel):
     base_dir: Path = BASE_DIR
 
 
+class BotConfig(BaseSettings):
+    token: str
+
+    model_config = SettingsConfigDict(
+        env_file=env_path, env_prefix="BOT_", extra="ignore"
+    )
+
+
 class Settings(BaseModel):
     db: DBConfig
     project: ProjectSettings
     scheduler: SchedulerConfig
     auth: AuthConfig
+    bot: BotConfig
 
 
 settings = Settings(
@@ -67,6 +76,7 @@ settings = Settings(
     project=ProjectSettings(),
     scheduler=SchedulerConfig.model_validate({}),
     auth=AuthConfig.model_validate({}),
+    bot=BotConfig.model_validate({}),
 )
 
 
